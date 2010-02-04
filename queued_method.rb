@@ -1,12 +1,5 @@
 module QueuedMethod
-    
   module InstanceMethods
-    
-    def self.included(base)
-      base.class_eval do
-      end
-    end
-  
     #
     # This creates the basic queued_method caching keys.
     # using the base ActiveRecord cache_key method
@@ -20,6 +13,7 @@ module QueuedMethod
     def queued_method_key(*args)
       "#{cache_key}/queued_method/#{args.join '/'}"
     end
+
     # simple helper for the queuing key
     def queued_method_queued_key(method)
       queued_method_key method, 'queued'
@@ -126,7 +120,6 @@ module QueuedMethod
       
       data[:results]
     end
-  
   end
   
   def queued_method(method, options = {})
@@ -165,7 +158,6 @@ module QueuedMethod
     EOS
   
   end
-  
 end
 
 
