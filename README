@@ -1,0 +1,70 @@
+QueuedMethod
+
+Aaron Hurley<aaron@zealog.com>
+Feb 3, 2010
+=====
+
+This module allows you to have methods automatically queued and cached for 
+certain periods of time and updating themselves once the
+a certain staleness has set in.  Cache keys at various stages 
+of job creation and running prevent dog piling.  
+
+Right now, QueuedMethod does not work on methods that require arguments though
+it could be extended similarly to Memoization.
+
+Current version requires Delayed::Job but job queue can easily be overridden with other queues.
+
+USAGE:
+
+Add to your ActiveRecord model with:
+
+    class User < ActiveRecord::Base
+      extend QueuedMethod 
+      ...
+
+To use the queued_method, use the following as an example (showcasing all options (none of which are required)).
+
+    ...
+    def faster_function
+      LookupYesterdaysDataFromDatabase
+    end
+
+    def a_really_slow_function
+      GetCurrentInfoFromAnotherWebService
+    end
+    queued_method :a_really_slow_function, 
+        :expires_in => 1.hour, 
+        :stale_in   => 45.minutes, 
+        :fallback   => :faster_function,
+        :force      => ENV['RAILS_ENV'] == 'development'
+    ...
+
+OPTIONS
+  :expires_in => TIME
+    Set the lifetime for the cache.  If this is left blank, the cache will not last until the cache_key changes (See below)
+
+  :stale_in => TIME_LESS_THAN_EXPIRES_IN
+    Set when the cache should be considered stale so that updating can be put into job queue.
+    If :expires_in is not set but :stale_in is, the cache won't expire with time, but will be 
+    updated as a job and freshened as necessary.  If the :stale_in is not set or is greater than 
+    :expires_in the cache will not ever be created ahead of time.
+
+  :fallback => SYMBOL_FOR_OTHER_METHOD
+    This allows you to assign a function to call instead of the base method if the cache is expired 
+    the base method is added to the job queue.  
+
+  :force => SHOULD_THE_CACHING_BE_SKIPPED?
+    This option allows you to disable the caching in certain environments. If you have a fallback function,
+    that option will be used if force is set to true.
+
+To use, just call the base function as you normally would.  
+
+  ...
+  @info = a_really_slow_function
+
+
+If you want to dump the cached info on the method, call the method with the option of true
+
+  ...
+  @info = a_really_slow_function(true)
+
