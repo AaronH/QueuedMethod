@@ -69,3 +69,7 @@ If you want to dump the cached info on the method, call the method with the opti
   ...
   @info = a_really_slow_function(true)
 
+
+TODO:
+  Build test suite
+  Plugin/Gemize
