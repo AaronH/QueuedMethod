@@ -41,7 +41,8 @@ To use the queued_method, use the following as an example (showcasing all option
 
 OPTIONS
   :expires_in => TIME
-    Set the lifetime for the cache.  If this is left blank, the cache will not last until the cache_key changes (See below)
+    Set the lifetime for the cache.  If this is left blank, the cache will survive until the cache_key 
+    changes (see queued_method_key function).
 
   :stale_in => TIME_LESS_THAN_EXPIRES_IN
     Set when the cache should be considered stale so that updating can be put into job queue.
